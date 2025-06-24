@@ -19,11 +19,11 @@
   </div>
 </template>
 
-<script setup>
-  import { ref, onMounted } from 'vue'
+<script setup>  import { ref, onMounted } from 'vue'
   import { CheckCircleOutlined, DoubleRightOutlined, UnlockOutlined, LockOutlined } from '@ant-design/icons-vue'
   import axios from '@/stores/axios'
   import { message } from 'ant-design-vue'
+  import { t } from '@/locales'
 
   defineOptions({
     name: 'Captcha'
@@ -35,16 +35,15 @@
     value: {
       type: Boolean,
       default: false
-    },
-    // 成功文字
+    },    // 成功文字
     successText: {
       type: String,
-      default: '验证成功'
+      default: () => t('captcha.success')
     },
     // 开始的文字
     startText: {
       type: String,
-      default: '请按住滑块，拖动到最右边'
+      default: () => t('captcha.slide')
     }
   })
 

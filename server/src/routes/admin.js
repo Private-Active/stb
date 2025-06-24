@@ -529,8 +529,7 @@ router.get('/invite-codes/export', auth, isAdmin, async (req, res) => {
     // 构造 CSV 数据
     const csvData = codes.map(code => ({
       邀请码: code.code,
-      状态: code.status === 'unused' ? '未使用' : '已使用',
-      使用人: code.usedBy ? `${code.usedBy.username} (${code.usedBy.email})` : '-',
+      状态: code.status === 'unused' ? '未使用' : '已使用',      使用人: code.usedBy ? `${code.usedBy.username} (${code.usedBy.email})` : '-',
       使用时间: code.usedAt ? new Date(code.usedAt).toLocaleString() : '-',
       生成时间: new Date(code.createdAt).toLocaleString()
     }))

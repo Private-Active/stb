@@ -2,51 +2,49 @@
   <div class="logs-container">
     <!-- 搜索和过滤 -->
     <div class="search-bar">
-      <a-form layout="inline">
-        <a-form-item label="日期范围" class="range-picker">
-          <a-range-picker v-model:value="dateRange" :locale="locale" />
+      <a-form layout="inline">        <a-form-item :label="t('logs.dateRange')" class="range-picker">
+          <a-range-picker v-model:value="dateRange" :locale="getDatePickerLocale()" />
         </a-form-item>
-        <a-form-item label="用户名">
-          <a-input v-model:value="username" placeholder="请输入用户名" />
+        <a-form-item :label="t('logs.username')">
+          <a-input v-model:value="username" :placeholder="t('logs.username')" />
         </a-form-item>
-        <a-form-item label="IP地址">
-          <a-input v-model:value="ip" placeholder="请输入IP地址" />
+        <a-form-item :label="t('logs.ipAddress')">
+          <a-input v-model:value="ip" :placeholder="t('logs.ipAddress')" />
         </a-form-item>
         <a-form-item class="search-button">
           <a-button type="primary" :disabled="!dateRange.length && !username && !ip" @click="handleSearch">
-            搜索
+            {{ t('logs.search') }}
           </a-button>
-          <a-button style="margin-left: 8px" :disabled="!dateRange.length" @click="handleReset">重置</a-button>
-          <a-button type="primary" danger style="margin-left: 8px" @click="handleClearAll">清空日志</a-button>
+          <a-button style="margin-left: 8px" :disabled="!dateRange.length" @click="handleReset">{{ t('logs.reset') }}</a-button>
+          <a-button type="primary" danger style="margin-left: 8px" @click="handleClearAll">{{ t('logs.clearAll') }}</a-button>
         </a-form-item>
       </a-form>
     </div>
-    <a-spin :spinning="loading">
-      <el-table :data="logs" scrollbar-always-on fit>
-        <el-table-column label="用户名" show-overflow-tooltip fixed>
+    <a-spin :spinning="loading">      <el-table :data="logs" scrollbar-always-on fit>
+        <el-table-column :label="t('logs.username')" show-overflow-tooltip fixed>
           <template #default="{ row }">
-            {{ row?.user?.username || '游客' }}
+            {{ row?.user?.username || t('logs.guest') }}
           </template>
         </el-table-column>
-        <el-table-column prop="ip" show-overflow-tooltip label="IP地址" />
-        <el-table-column prop="createdAt" show-overflow-tooltip sortable label="上传时间">
+        <el-table-column prop="ip" show-overflow-tooltip :label="t('logs.ipAddress')" />
+        <el-table-column prop="createdAt" show-overflow-tooltip sortable :label="t('logs.uploadTime')">
           <template #default="{ row }">
             {{ formatDate(row.createdAt) }}
           </template>
         </el-table-column>
-        <el-table-column prop="originalName" show-overflow-tooltip label="文件名" />
-        <el-table-column prop="size" sortable label="文件大小">
+        <el-table-column prop="originalName" show-overflow-tooltip :label="t('logs.fileName')" />
+        <el-table-column prop="size" sortable :label="t('logs.fileSize')">
           <template #default="{ row }">
             {{ formatFileSize(row.size) }}
           </template>
         </el-table-column>
-        <el-table-column label="图片尺寸">
+        <el-table-column :label="t('logs.imageSize')">
           <template #default="{ row }">{{ row.width }}x{{ row.height }}</template>
         </el-table-column>
-        <el-table-column prop="format" label="图片格式" />
-        <el-table-column label="操作" fixed="right">
+        <el-table-column prop="format" :label="t('logs.format')" />
+        <el-table-column :label="t('logs.actions')" fixed="right">
           <template #default="{ row }">
-            <a-button type="link" danger @click="handleDelete(row._id)">删除</a-button>
+            <a-button type="link" danger @click="handleDelete(row._id)">{{ t('logs.delete') }}</a-button>
           </template>
         </el-table-column>
       </el-table>
@@ -58,26 +56,23 @@
       show-size-changer
       @change="fetchLogs"
     />
-  </div>
-  <div class="stats-card">
-    <a-card title="每日上传统计">
+  </div>  <div class="stats-card">
+    <a-card :title="t('logs.dailyUploadStats')">
       <div ref="dailyChartRef" style="height: 300px"></div>
     </a-card>
-    <a-card title="IP分布统计">
+    <a-card :title="t('logs.ipDistribution')">
       <div ref="ipChartRef" style="height: 300px"></div>
     </a-card>
-    <a-card title="用户上传统计">
+    <a-card :title="t('logs.userUploadStats')">
       <div ref="userChartRef" style="height: 300px"></div>
     </a-card>
   </div>
 </template>
 
-<script setup>
-  import { ref, onMounted } from 'vue'
+<script setup>  import { ref, onMounted } from 'vue'
   import { message, Modal } from 'ant-design-vue'
   import axios from '@/stores/axios'
-  import { formatDate, formatFileSize } from '@/stores/formatDate'
-  import locale from 'ant-design-vue/es/date-picker/locale/zh_CN'
+  import { formatDate, formatFileSize } from '@/stores/formatDate'  import { getDatePickerLocale, t } from '@/locales'
   import * as echarts from 'echarts'
   import qs from 'qs'
 

@@ -1,16 +1,16 @@
 <template>
   <div class="register">
-    <a-card class="register-card" title="注册">
+    <a-card class="register-card" :title="t('register.title')">
       <a-form :model="form" @finish="handleSubmit">
         <a-form-item name="username" :rules="rules.username">
-          <a-input v-model:value="form.username" show-count :maxlength="10" placeholder="请输入用户名">
+          <a-input v-model:value="form.username" show-count :maxlength="10" :placeholder="t('register.username')">
             <template #prefix>
               <UserOutlined />
             </template>
           </a-input>
         </a-form-item>
         <a-form-item name="email" :rules="rules.email">
-          <a-input v-model:value="form.email" type="email" placeholder="请输入邮箱">
+          <a-input v-model:value="form.email" type="email" :placeholder="t('register.email')">
             <template #prefix>
               <MailOutlined />
             </template>
@@ -18,32 +18,32 @@
         </a-form-item>
         <a-form-item v-if="userStore?.config?.smtp?.enabled" name="code" :rules="rules.code">
           <a-input-group compact>
-            <a-input v-model:value="form.code" placeholder="请输入验证码" style="width: calc(100% - 120px)">
+            <a-input v-model:value="form.code" :placeholder="t('register.verificationCode')" style="width: calc(100% - 120px)">
               <template #prefix>
                 <SafetyOutlined />
               </template>
             </a-input>
             <a-button :disabled="!form.email || !!countdown" style="width: 120px" @click="handleSendCode">
-              {{ countdown ? `${countdown}s后重试` : '获取验证码' }}
+              {{ countdown ? t('register.codeResend').replace('{seconds}', countdown) : t('register.getCode') }}
             </a-button>
           </a-input-group>
         </a-form-item>
         <a-form-item name="password" :rules="rules.password">
-          <a-input-password v-model:value="form.password" placeholder="请输入密码">
+          <a-input-password v-model:value="form.password" :placeholder="t('register.password')">
             <template #prefix>
               <LockOutlined />
             </template>
           </a-input-password>
         </a-form-item>
         <a-form-item name="confirmPassword" :rules="rules.confirmPassword">
-          <a-input-password v-model:value="form.confirmPassword" placeholder="请确认密码">
+          <a-input-password v-model:value="form.confirmPassword" :placeholder="t('register.confirmPassword')">
             <template #prefix>
               <LockOutlined />
             </template>
           </a-input-password>
         </a-form-item>
         <a-form-item name="inviteCode" :rules="rules.inviteCode" v-if="userStore?.config?.site?.inviteCodeRequired">
-          <a-input v-model:value="form.inviteCode" placeholder="请输入邀请码">
+          <a-input v-model:value="form.inviteCode" :placeholder="t('register.inviteCode')">
             <template #prefix>
               <LockOutlined />
             </template>
@@ -54,21 +54,19 @@
         </a-form-item>
         <a-form-item>
           <a-button type="primary" html-type="submit" :loading="loading" :disabled="isSubmitDisabled" block>
-            注册
+            {{ t('register.registerButton') }}
           </a-button>
         </a-form-item>
-        <a-form-item>
-          <router-link to="/login">已有账号？去登录</router-link>
-          或者
-          <router-link to="/resetpassword">找回密码</router-link>
+        <a-form-item>          <router-link to="/login">{{ t('register.loginLink') }}</router-link>
+          {{ t('common.or') }}
+          <router-link to="/resetpassword">{{ t('register.forgotPassword') }}</router-link>
         </a-form-item>
       </a-form>
     </a-card>
   </div>
 </template>
 
-<script setup>
-  import { ref, reactive, onMounted, computed } from 'vue'
+<script setup>  import { ref, reactive, onMounted, computed } from 'vue'
   import { message } from 'ant-design-vue'
   import { UserOutlined, MailOutlined, LockOutlined, SafetyOutlined } from '@ant-design/icons-vue'
   import { useRouter } from 'vue-router'
@@ -76,6 +74,7 @@
   import axios from '@/stores/axios'
   import qs from 'qs'
   import Captcha from '@/components/Captcha.vue'
+  import { t } from '@/locales'
 
   const router = useRouter()
   const userStore = useUserStore()

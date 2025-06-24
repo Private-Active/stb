@@ -1,17 +1,16 @@
 <template>
   <div class="reset-password">
-    <a-card class="reset-card" title="找回密码">
+    <a-card class="reset-card" :title="t('resetPassword.title')">
       <!-- 步骤1: 验证邮箱 -->
       <div v-if="currentStep === 0">
         <a-form :model="emailForm" @finish="handleEmailSubmit">
           <a-form-item
             name="email"
-            :rules="[
-              { required: true, message: '请输入邮箱' },
-              { type: 'email', message: '请输入有效的邮箱地址' }
+            :rules="[              { required: true, message: t('register.emailRequired') },
+              { type: 'email', message: t('register.invalidEmail') }
             ]"
           >
-            <a-input v-model:value="emailForm.email" type="email" placeholder="请输入注册邮箱">
+            <a-input v-model:value="emailForm.email" type="email" :placeholder="t('resetPassword.email')">
               <template #prefix>
                 <mail-outlined />
               </template>
@@ -19,7 +18,7 @@
           </a-form-item>
           <a-form-item>
             <a-button type="primary" :disabled="!emailForm.email" html-type="submit" :loading="loading">
-              发送验证码
+              {{ t('resetPassword.sendCode') }}
             </a-button>
           </a-form-item>
         </a-form>
@@ -27,15 +26,15 @@
       <!-- 步骤2: 验证验证码 -->
       <div v-if="currentStep === 1">
         <a-form :model="codeForm" @finish="handleCodeSubmit">
-          <a-form-item name="code" :rules="[{ required: true, message: '请输入验证码' }]">
-            <a-input v-model:value="codeForm.code" placeholder="请输入验证码">
+          <a-form-item name="code" :rules="[{ required: true, message: t('register.verificationCode') }]">
+            <a-input v-model:value="codeForm.code" :placeholder="t('resetPassword.verificationCode')">
               <template #prefix>
                 <safety-outlined />
               </template>
             </a-input>
           </a-form-item>
           <a-form-item>
-            <a-button type="primary" :disabled="!codeForm.code" html-type="submit" :loading="loading">验证</a-button>
+            <a-button type="primary" :disabled="!codeForm.code" html-type="submit" :loading="loading">{{ t('common.confirm') }}</a-button>
           </a-form-item>
         </a-form>
       </div>
@@ -44,12 +43,11 @@
         <a-form :model="resetForm" @finish="handleResetSubmit">
           <a-form-item
             name="password"
-            :rules="[
-              { required: true, message: '请输入新密码' },
-              { min: 6, message: '密码长度不能小于6位' }
+            :rules="[              { required: true, message: t('register.passwordRequired') },
+              { min: 6, message: t('register.passwordLength') }
             ]"
           >
-            <a-input-password v-model:value="resetForm.password" placeholder="请输入新密码">
+            <a-input-password v-model:value="resetForm.password" :placeholder="t('resetPassword.password')">
               <template #prefix>
                 <lock-outlined />
               </template>
@@ -57,9 +55,9 @@
           </a-form-item>
           <a-form-item
             name="confirmPassword"
-            :rules="[{ required: true, message: '请确认密码' }, { validator: validateConfirmPassword }]"
+            :rules="[{ required: true, message: t('register.confirmPasswordRequired') }, { validator: validateConfirmPassword }]"
           >
-            <a-input-password v-model:value="resetForm.confirmPassword" placeholder="请确认新密码">
+            <a-input-password v-model:value="resetForm.confirmPassword" :placeholder="t('resetPassword.confirmPassword')">
               <template #prefix>
                 <lock-outlined />
               </template>
@@ -72,7 +70,7 @@
               :disabled="!resetForm.password || !resetForm.confirmPassword"
               :loading="loading"
             >
-              重置密码
+              {{ t('resetPassword.resetButton') }}
             </a-button>
           </a-form-item>
         </a-form>
@@ -82,13 +80,13 @@
 </template>
 
 <script setup>
-  import { ref, reactive } from 'vue'
-  import { message } from 'ant-design-vue'
+  import { ref, reactive } from 'vue'  import { message } from 'ant-design-vue'
   import { MailOutlined, LockOutlined, SafetyOutlined } from '@ant-design/icons-vue'
   import { useRouter } from 'vue-router'
   import axios from '@/stores/axios'
   import qs from 'qs'
   import { useUserStore } from '@/stores/user'
+  import { t } from '@/locales'
 
   const router = useRouter()
   const userStore = useUserStore()
@@ -112,7 +110,7 @@
   // 验证确认密码
   const validateConfirmPassword = async (rule, value) => {
     if (value !== resetForm.password) {
-      throw new Error('两次输入的密码不一致')
+      throw new Error(t('settings.passwordMismatch'))
     }
   }
 

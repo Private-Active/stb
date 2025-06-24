@@ -1,23 +1,23 @@
 <template>
   <div class="login-container">
-    <a-card title="登录" class="login-box">
+    <a-card :title="t('login.title')" class="login-box">
       <a-form :model="formState" @finish="handleSubmit" layout="vertical">
-        <a-form-item label="用户名" name="username" :rules="[{ required: true, message: '请输入用户名' }]">
-          <a-input v-model:value="formState.username" placeholder="请输入用户名">
+        <a-form-item :label="t('login.username')" name="username" :rules="[{ required: true, message: t('register.usernameRequired') }]">
+          <a-input v-model:value="formState.username" :placeholder="t('login.username')">
             <template #prefix>
               <UserOutlined />
             </template>
           </a-input>
         </a-form-item>
-        <a-form-item label="密码" name="password" :rules="[{ required: true, message: '请输入密码' }]">
-          <a-input-password v-model:value="formState.password" placeholder="请输入密码">
+        <a-form-item :label="t('login.password')" name="password" :rules="[{ required: true, message: t('register.passwordRequired') }]">
+          <a-input-password v-model:value="formState.password" :placeholder="t('login.password')">
             <template #prefix>
               <LockOutlined />
             </template>
           </a-input-password>
         </a-form-item>
         <!-- 验证码 -->
-        <a-form-item label="验证码" required name="captcha" v-if="captchaShow">
+        <a-form-item :label="t('login.verificationCode')" required name="captcha" v-if="captchaShow">
           <Captcha v-model:value="formState.captcha" v-model:captchaId="formState.captchaId" />
         </a-form-item>
         <a-form-item class="sin">
@@ -27,10 +27,9 @@
             :block="!userStore.config?.site?.register"
             :disabled="isSubmitDisabled"
           >
-            登录账号
-          </a-button>
-          <a-button @click="router.push('/register')" v-if="userStore.config?.site?.register">注册账号</a-button>
-          <a-button @click="router.push('/reset-password')">找回密码</a-button>
+            {{ t('login.loginButton') }}
+          </a-button>          <a-button @click="router.push('/register')" v-if="userStore.config?.site?.register">{{ t('common.register') }}</a-button>
+          <a-button @click="router.push('/reset-password')">{{ t('login.forgotPassword') }}</a-button>
         </a-form-item>
         <template v-if="userStore?.config?.oauth?.enabled">
           <a-divider
@@ -40,7 +39,7 @@
               userStore?.config?.oauth?.linuxdo?.enabled
             "
           >
-            或
+            {{ t('common.or') }}
           </a-divider>
           <a-button @click="handleBind('github')" v-if="userStore?.config?.oauth?.github?.enabled">
             <GithubOutlined />
@@ -62,8 +61,7 @@
   </div>
 </template>
 
-<script setup>
-  import { reactive, computed } from 'vue'
+<script setup>  import { reactive, computed } from 'vue'
   import { useRouter } from 'vue-router'
   import { useUserStore } from '@/stores/user'
   import { message } from 'ant-design-vue'
@@ -71,6 +69,7 @@
   import axios from '@/stores/axios'
   import { UserOutlined, LockOutlined, GithubOutlined, GoogleOutlined } from '@ant-design/icons-vue'
   import LinuxdoOutlined from '@/assets/linuxdo.svg'
+  import { t } from '@/locales'
 
   const router = useRouter()
   const userStore = useUserStore()

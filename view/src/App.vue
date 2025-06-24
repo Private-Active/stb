@@ -15,41 +15,39 @@
               </template>
             </a-avatar>
           </a>
-          <template #overlay>
-            <a-menu v-if="userStore.token">
+          <template #overlay>            <a-menu v-if="userStore.token">
               <a-menu-item key="user" @click="router.push(`/user/${userStore?.user?._id}`)">
                 <UserOutlined />
-                个人主页
+                {{ t('common.personalPage') }}
               </a-menu-item>
               <a-menu-item key="settings" @click="router.push('/settings')">
                 <SettingOutlined />
-                个人设置
+                {{ t('common.personalSettings') }}
               </a-menu-item>
               <a-menu-divider />
               <a-menu-item key="logout" @click="handleLogout">
                 <LogoutOutlined />
-                退出登录
+                {{ t('common.logout') }}
               </a-menu-item>
             </a-menu>
             <a-menu v-else>
               <a-menu-item key="user" @click="router.push(`/login`)">
                 <UserOutlined />
-                登录账号
+                {{ t('common.loginAccount') }}
               </a-menu-item>
               <a-menu-divider />
               <a-menu-item key="settings" @click="router.push('/register')">
                 <UserAddOutlined />
-                注册账号
+                {{ t('common.registerAccount') }}
               </a-menu-item>
             </a-menu>
           </template>
         </a-dropdown>
       </div>
-    </div>
-    <a-config-provider :locale="zhCN">
-      <!-- 遮罩 -->
+    </div>    <a-config-provider :locale="getAntdLocale()">
+      <!-- overlay -->
       <div class="mask" :class="{ 'mask-active': isMenuActive }" @click="isMenuActive = false"></div>
-      <!-- 菜单 -->
+      <!-- menu -->
       <div class="menu" :class="{ 'menu-active': isMenuActive }">
         <div class="logo">
           <router-link to="/">
@@ -66,10 +64,9 @@
             </a-menu-item>
           </template>
           <a-sub-menu key="admin" v-if="userStore.user?.founder">
-            <template #title>
-              <span>
+            <template #title>              <span>
                 <SettingOutlined />
-                后台管理
+                {{ t('common.backendManagement') }}
               </span>
             </template>
             <a-menu-item v-for="item in adminMenus" :key="item.name">
@@ -77,16 +74,15 @@
                 {{ item.title }}
               </router-link>
             </a-menu-item>
-          </a-sub-menu>
-          <a-menu-item key="login" v-if="!userStore.token">
+          </a-sub-menu>          <a-menu-item key="login" v-if="!userStore.token">
             <router-link to="/login">
               <UserOutlined />
-              注册 / 登录
+              {{ t('common.loginRegister') }}
             </router-link>
           </a-menu-item>
           <a-menu-item key="logout" style="float: right" @click="handleLogout" v-if="userStore.token">
             <PoweroffOutlined />
-            退出登录
+            {{ t('common.logout') }}
           </a-menu-item>
         </a-menu>
       </div>
@@ -108,16 +104,14 @@
   </div>
 </template>
 
-<script setup>
-  import { ref, onMounted, watch } from 'vue'
+<script setup>  import { ref, onMounted, watch } from 'vue'
   import { useRouter, useRoute } from 'vue-router'
   import { useUserStore } from '@/stores/user'
   import { getIpAddress } from '@/stores/getIp'
   import { ElMessageBox } from 'element-plus'
   import 'element-plus/es/components/message-box/style/css'
   import axios from '@/stores/axios'
-  import { message } from 'ant-design-vue'
-  import zhCN from 'ant-design-vue/es/locale/zh_CN'
+  import { message } from 'ant-design-vue'  import { getAntdLocale, t } from '@/locales'
   import {
     HomeOutlined,
     SettingOutlined,
@@ -141,28 +135,27 @@
     ipv4: '',
     ipv6: ''
   })
-
-  // 定义菜单项
+  // Define menu items
   const menuItems = [
-    { name: 'home', title: '图床首页', url: '/home', icon: HomeOutlined },
-    { name: 'my', title: '我的图片', url: '/my', icon: SmileOutlined },
-    { name: 'gallery', title: '图片广场', url: '/gallery', icon: FireOutlined },
-    { name: 'docs', title: '接口文档', url: '/docs', icon: QuestionCircleOutlined }
+    { name: 'home', title: t('menu.home'), url: '/home', icon: HomeOutlined },
+    { name: 'my', title: t('menu.myImages'), url: '/my', icon: SmileOutlined },
+    { name: 'gallery', title: t('menu.gallery'), url: '/gallery', icon: FireOutlined },
+    { name: 'docs', title: t('menu.docs'), url: '/docs', icon: QuestionCircleOutlined }
   ]
 
-  // 计算属性返回过滤和排序后的菜单
+  // Computed property for filtered and sorted menu
   const menus = ref([])
 
   const adminMenus = [
-    { name: 'dashboard', title: '仪表盘' },
-    { name: 'logs', title: '日志管理' },
-    { name: 'users', title: '用户管理' },
-    { name: 'images', title: '图片管理' },
-    { name: 'albums', title: '相册管理' },
-    { name: 'announcements', title: '公告管理' },
-    { name: 'config', title: '系统配置' },
-    { name: 'rolegroups', title: '角色组管理' },
-    { name: 'invitecodes', title: '邀请码管理' }
+    { name: 'dashboard', title: t('admin.dashboard') },
+    { name: 'logs', title: t('admin.logs') },
+    { name: 'users', title: t('admin.users') },
+    { name: 'images', title: t('admin.images') },
+    { name: 'albums', title: t('admin.albums') },
+    { name: 'announcements', title: t('admin.announcements') },
+    { name: 'config', title: t('admin.config') },
+    { name: 'rolegroups', title: t('admin.rolegroups') },
+    { name: 'invitecodes', title: t('admin.invitecodes') }
   ]
 
   // 获取配置
@@ -197,15 +190,14 @@
         }
         if (data.type === 'modal' && time >= nextTime && data.isActive) {
           ElMessageBox.alert(data.content, data.title, {
-            type: data.effect,
-            callback: () => {
+            type: data.effect,            callback: () => {
               userStore.announcement = {
                 _id: data._id,
                 nextTime: Date.now() + data.nextTime * 24 * 60 * 60 * 1000
               }
             },
             showCancelButton: false,
-            confirmButtonText: '知道了',
+            confirmButtonText: t('common.iKnow'),
             dangerouslyUseHTMLString: true
           })
         }
@@ -234,12 +226,11 @@
       message.error(response?.data?.error)
     }
   }
-
   const handleLogout = async () => {
     userStore.user = userStore.guest
     userStore.token = null
     router.push('/login')
-    message.warning('账号已退出')
+    message.warning(t('common.logoutSuccess'))
   }
 
   const routerWatch = url => {

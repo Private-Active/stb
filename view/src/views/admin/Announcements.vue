@@ -77,10 +77,10 @@
           </a-select>
         </a-form-item>
         <a-form-item label="开始时间" required>
-          <a-date-picker style="width: 100%" v-model:value="form.startTime" format="YYYY/MM/DD HH:mm:ss" />
+          <a-date-picker style="width: 100%" v-model:value="form.startTime" format="YYYY/MM/DD HH:mm:ss" :locale="getDatePickerLocale()" />
         </a-form-item>
         <a-form-item label="结束时间" required>
-          <a-date-picker style="width: 100%" v-model:value="form.endTime" format="YYYY/MM/DD HH:mm:ss" />
+          <a-date-picker style="width: 100%" v-model:value="form.endTime" format="YYYY/MM/DD HH:mm:ss" :locale="getDatePickerLocale()" />
         </a-form-item>
         <a-form-item label="关闭公告后多久显示" required>
           <a-input-number style="width: 100%" v-model:value="form.nextTime" placeholder="请输入天数" :min="1">
@@ -96,11 +96,11 @@
 </template>
 
 <script setup>
-  import { ref, onMounted } from 'vue'
-  import { message } from 'ant-design-vue'
+  import { ref, onMounted } from 'vue'  import { message } from 'ant-design-vue'
   import axios from '@/stores/axios'
   import dayjs from 'dayjs'
   import { formatDate } from '@/stores/formatDate'
+  import { getDatePickerLocale, t } from '@/locales'
 
   const announcements = ref([])
   const dialogVisible = ref(false)
